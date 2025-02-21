@@ -1,18 +1,26 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Instagram } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
-  <Link
-    to={to}
-    className="text-gray-500 hover:text-black transition-colors duration-200"
-  >
-    {children}
-  </Link>
-);
+const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => {
+  const location = useLocation();
+  const isActive = location.pathname === to;
+  
+  return (
+    <Link
+      to={to}
+      className={cn(
+        "text-gray-500 hover:text-black transition-colors duration-200",
+        isActive && "text-black font-medium"
+      )}
+    >
+      {children}
+    </Link>
+  );
+};
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -28,10 +36,9 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
             ERIC RYAN ANDERSON
           </Link>
           <div className="hidden md:flex space-x-8 items-center">
-            <NavLink to="/projects">PROJECTS</NavLink>
-            <NavLink to="/portraits">PORTRAITS</NavLink>
-            <NavLink to="/motion">MOTION</NavLink>
-            <NavLink to="/loose-ends">LOOSE ENDS</NavLink>
+            <NavLink to="/people">PEOPLE</NavLink>
+            <NavLink to="/animals">ANIMALS</NavLink>
+            <NavLink to="/landscapes">LANDSCAPES</NavLink>
             <NavLink to="/info">INFO</NavLink>
             <a
               href="https://instagram.com"
