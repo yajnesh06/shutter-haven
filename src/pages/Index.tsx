@@ -1,13 +1,38 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React from 'react';
+import { Layout } from '@/components/Layout';
+import { MasonryGrid } from '@/components/MasonryGrid';
+
+const images = [
+  {
+    id: '1',
+    url: 'https://source.unsplash.com/random/800x1200?portrait',
+    width: 800,
+    height: 1200,
+    title: 'Portrait Study'
+  },
+  {
+    id: '2',
+    url: 'https://source.unsplash.com/random/800x600?landscape',
+    width: 800,
+    height: 600,
+    title: 'Landscape'
+  },
+  {
+    id: '3',
+    url: 'https://source.unsplash.com/random/800x800?street',
+    width: 800,
+    height: 800,
+    title: 'Street'
+  },
+  // Add more images as needed
+];
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <Layout>
+      <MasonryGrid images={images} />
+    </Layout>
   );
 };
 
