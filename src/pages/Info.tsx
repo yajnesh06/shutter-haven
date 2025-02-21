@@ -13,14 +13,26 @@ const Info = () => {
         className="container mx-auto px-4 py-12 max-w-2xl"
       >
         <div className="space-y-8">
-          <motion.h1 
+          <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-4xl font-bold"
+            className="flex flex-col items-center space-y-6"
           >
-            Eric Ryan Anderson
-          </motion.h1>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className="w-48 h-48 rounded-full overflow-hidden"
+            >
+              <img 
+                src="https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?auto=format&fit=crop&w=400&h=400"
+                alt="Eric Ryan Anderson"
+                className="w-full h-full object-cover"
+              />
+            </motion.div>
+            <h1 className="text-4xl font-bold text-center">Eric Ryan Anderson</h1>
+          </motion.div>
           
           <motion.div 
             initial={{ opacity: 0 }}
