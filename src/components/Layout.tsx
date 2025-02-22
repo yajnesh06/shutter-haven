@@ -5,12 +5,7 @@ import { cn } from '@/lib/utils';
 import { Instagram } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-interface NavLinkProps {
-  to: string;
-  children: React.ReactNode;
-}
-
-const NavLink: React.FC<NavLinkProps> = ({ to, children }) => {
+const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
   
@@ -27,11 +22,7 @@ const NavLink: React.FC<NavLinkProps> = ({ to, children }) => {
   );
 };
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-export const Layout: React.FC<LayoutProps> = ({ children }) => {
+export const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen bg-[#f8f8f8]">
       <motion.nav 

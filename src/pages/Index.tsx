@@ -1,8 +1,9 @@
+
 import React from 'react';
 import { Layout } from '@/components/Layout';
 import { MasonryGrid } from '@/components/MasonryGrid';
+import { ImageType } from '@/types';
 import { useLocation } from 'react-router-dom';
-import { ImageType, ImageCategory } from '@/types';
 
 const images: ImageType[] = [
   {
@@ -127,7 +128,7 @@ const images: ImageType[] = [
   }
 ];
 
-const Index: React.FC = () => {
+const Index = () => {
   const location = useLocation();
   const category = location.pathname.substring(1) as ImageCategory | '';
   

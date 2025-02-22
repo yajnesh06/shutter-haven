@@ -7,7 +7,7 @@ interface MasonryGridProps {
   images: ImageType[];
 }
 
-export const MasonryGrid: React.FC<MasonryGridProps> = ({ images }) => {
+export const MasonryGrid = ({ images }: MasonryGridProps) => {
   return (
     <motion.div 
       initial={{ opacity: 0 }}
