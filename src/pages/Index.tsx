@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { Layout } from '@/components/Layout';
 import { MasonryGrid } from '@/components/MasonryGrid';
 import { ImageType } from '@/types';
+import { useLocation } from 'react-router-dom';
 
 const images: ImageType[] = [
   {
@@ -41,8 +43,8 @@ const images: ImageType[] = [
     url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e',
     width: 4896,
     height: 3264,
-    title: 'Robot Portrait',
-    category: 'people'
+    title: 'Wildlife Portrait',
+    category: 'animals'
   },
   {
     id: '6',
@@ -57,15 +59,15 @@ const images: ImageType[] = [
     url: 'https://images.unsplash.com/photo-1473091534298-04dcbce3278c',
     width: 4896,
     height: 3264,
-    title: 'Digital Art',
-    category: 'people'
+    title: 'Lion King',
+    category: 'animals'
   },
   {
     id: '8',
     url: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7',
     width: 5760,
     height: 3840,
-    title: 'Code Poetry',
+    title: 'Desert Life',
     category: 'landscapes'
   },
   {
@@ -89,24 +91,24 @@ const images: ImageType[] = [
     url: 'https://images.unsplash.com/photo-1549880338-65ddcdfd017b',
     width: 5472,
     height: 3648,
-    title: 'Winter Peaks',
-    category: 'landscapes'
+    title: 'Winter Fox',
+    category: 'animals'
   },
   {
     id: '12',
     url: 'https://images.unsplash.com/photo-1682687982501-1e58ab814714',
     width: 6240,
     height: 4160,
-    title: 'Urban Night',
-    category: 'landscapes'
+    title: 'Urban Portrait',
+    category: 'people'
   },
   {
     id: '13',
     url: 'https://images.unsplash.com/photo-1682687219570-4c596363fd96',
     width: 6240,
     height: 4160,
-    title: 'City Lights',
-    category: 'landscapes'
+    title: 'City Life',
+    category: 'people'
   },
   {
     id: '14',
@@ -121,55 +123,22 @@ const images: ImageType[] = [
     url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb',
     width: 2500,
     height: 1667,
-    title: 'Mountain Lake',
-    category: 'landscapes'
-  },
-  {
-    id: '16',
-    url: 'https://images.unsplash.com/photo-1511884642898-4c92249e20b6',
-    width: 3648,
-    height: 5472,
-    title: 'Portrait Light',
-    category: 'people'
-  },
-  {
-    id: '17',
-    url: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e',
-    width: 2400,
-    height: 1600,
-    title: 'Nature Path',
-    category: 'landscapes'
-  },
-  {
-    id: '18',
-    url: 'https://images.unsplash.com/photo-1490730141103-6cac27016106',
-    width: 5184,
-    height: 3456,
-    title: 'Spring Colors',
-    category: 'landscapes'
-  },
-  {
-    id: '19',
-    url: 'https://images.unsplash.com/photo-1501854140801-50d01698950b',
-    width: 5472,
-    height: 3648,
-    title: 'Mountain Range',
-    category: 'landscapes'
-  },
-  {
-    id: '20',
-    url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e',
-    width: 4752,
-    height: 3168,
-    title: 'Forest Light',
-    category: 'landscapes'
+    title: 'Eagle Flying',
+    category: 'animals'
   }
 ];
 
 const Index = () => {
+  const location = useLocation();
+  const category = location.pathname.substring(1) as ImageCategory | '';
+  
+  const filteredImages = category 
+    ? images.filter(image => image.category === category)
+    : images;
+
   return (
     <Layout>
-      <MasonryGrid images={images} />
+      <MasonryGrid images={filteredImages} />
     </Layout>
   );
 };
