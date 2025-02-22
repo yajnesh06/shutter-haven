@@ -1,8 +1,13 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ImageType } from '@/types';
 
-export const MasonryGrid = ({ images }) => {
+interface MasonryGridProps {
+  images: ImageType[];
+}
+
+export const MasonryGrid: React.FC<MasonryGridProps> = ({ images }) => {
   return (
     <motion.div 
       initial={{ opacity: 0 }}
