@@ -1,69 +1,105 @@
-# Welcome to your Lovable project
 
-## Project info
+# Photography Portfolio App
 
-**URL**: https://lovable.dev/projects/362471f9-9d54-47ab-a509-c8dfb55e1606
+A responsive photography portfolio application built with React, TypeScript, and Framer Motion.
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+- Responsive masonry grid layout
+- Smooth animations and transitions
+- Category-based filtering
+- Hover effects and image details
+- Optimized image loading
 
-**Use Lovable**
+## Getting Started
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/362471f9-9d54-47ab-a509-c8dfb55e1606) and start prompting.
+### Prerequisites
 
-Changes made via Lovable will be committed automatically to this repo.
+- Node.js (v14 or higher) - [Install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- npm (comes with Node.js) or yarn
 
-**Use your preferred IDE**
+### Installation
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+1. Clone the repository
+```bash
+git clone <your-repo-url>
+cd <project-directory>
 ```
 
-**Edit a file directly in GitHub**
+2. Install dependencies
+```bash
+npm install
+# or
+yarn install
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+3. Start the development server
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-**Use GitHub Codespaces**
+The application will be available at `http://localhost:5173`
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Adding New Images
 
-## What technologies are used for this project?
+### Image Storage Options
 
-This project is built with .
+1. **Cloud Storage (Recommended)**:
+   - Use services like AWS S3, Google Cloud Storage, or Cloudinary
+   - Benefits:
+     - Better performance
+     - Automatic image optimization
+     - CDN delivery
+     - Multiple image sizes/formats
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+2. **Project Assets**:
+   - Store images in `public/images/`
+   - Use relative paths in the images array
 
-## How can I deploy this project?
+### Adding New Images
 
-Simply open [Lovable](https://lovable.dev/projects/362471f9-9d54-47ab-a509-c8dfb55e1606) and click on Share -> Publish.
+1. Upload your image to your chosen storage solution
+2. Add the image information to the `images` array in `src/pages/Index.tsx`:
 
-## I want to use a custom domain - is that possible?
+```typescript
+{
+  id: 'unique-id',
+  url: 'your-image-url',
+  width: original-width,
+  height: original-height,
+  title: 'Image Title',
+  category: 'people' | 'animals' | 'landscapes'
+}
+```
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+The MasonryGrid component automatically handles different image aspect ratios and sizes.
+
+## Image Optimization Tips
+
+- Use compressed images (JPEG for photos, PNG for graphics)
+- Implement responsive images using srcset
+- Consider using a CDN
+- Use appropriate image dimensions (avoid oversized images)
+- Enable lazy loading for better performance
+
+## Development Guidelines
+
+- Follow the existing TypeScript types and interfaces
+- Maintain the component structure
+- Use Tailwind CSS for styling
+- Implement responsive design patterns
+- Test across different devices and screen sizes
+
+## Deployment
+
+The application can be built for production using:
+
+```bash
+npm run build
+# or
+yarn build
+```
+
+The built files will be in the `dist` directory, ready for deployment to your chosen hosting platform.
