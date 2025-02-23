@@ -2,7 +2,7 @@
 import React from 'react';
 import { Layout } from '@/components/Layout';
 import { MasonryGrid } from '@/components/MasonryGrid';
-import { ImageType } from '@/types';
+import { ImageType, ImageCategory } from '@/types';
 import { useLocation } from 'react-router-dom';
 
 const images: ImageType[] = [
