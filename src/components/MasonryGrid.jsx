@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const MasonryGrid = ({ images }) => {
+export const MasonryGrid = ({ images }) => {
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -60,5 +60,3 @@ const MasonryGrid = ({ images }) => {
     </motion.div>
   );
 };
-
-export default MasonryGrid;

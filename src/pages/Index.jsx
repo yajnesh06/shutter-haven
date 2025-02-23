@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Layout } from '@/components/Layout';
 import { MasonryGrid } from '@/components/MasonryGrid';
@@ -133,6 +134,9 @@ const Index = () => {
   const filteredImages = category 
     ? images.filter(image => image.category === category)
     : images;
+
+  console.log("Filtered Images:", filteredImages); // Debug log
+  console.log("Current category:", category); // Debug log
 
   return (
     <Layout>
