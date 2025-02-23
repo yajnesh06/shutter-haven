@@ -1,11 +1,9 @@
-
 import React from 'react';
 import { Layout } from '@/components/Layout';
 import { MasonryGrid } from '@/components/MasonryGrid';
-import { ImageType } from '@/types';
 import { useLocation } from 'react-router-dom';
 
-const images: ImageType[] = [
+const images = [
   {
     id: '1',
     url: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7',
@@ -130,7 +128,7 @@ const images: ImageType[] = [
 
 const Index = () => {
   const location = useLocation();
-  const category = location.pathname.substring(1) as ImageCategory | '';
+  const category = location.pathname.substring(1);
   
   const filteredImages = category 
     ? images.filter(image => image.category === category)
