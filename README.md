@@ -11,19 +11,6 @@ A responsive photography portfolio application built with React, TypeScript, and
 - Hover effects and image details
 - Optimized image loading
 
-## Planned Features
-
-- 🔍 Image Search: Search images by title, category, or description
-- 🖼️ Lightbox View: Full-screen image viewing with zoom capabilities
-- 💾 Download Options: Allow users to download images in different resolutions
-- 🔄 Social Sharing: Share images on social media platforms
-- 👤 User Authentication: Personal accounts for saving favorite images
-- 📱 Mobile App: Progressive Web App (PWA) support
-- 🏷️ Image Tagging: Add and filter by custom tags
-- 💬 Comments: Allow users to comment on images
-- 📊 Analytics: Track image views and interactions
-- 🎨 Theme Customization: Light/dark mode and custom color schemes
-
 ## Tech Stack
 
 - React 18
