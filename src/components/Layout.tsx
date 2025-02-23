@@ -33,7 +33,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
       >
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <Link to="/" className="text-xl font-medium">
-            ERIC RYAN ANDERSON
+            Yajnesh Ponnappa
           </Link>
           <div className="hidden md:flex space-x-8 items-center">
             <NavLink to="/people">PEOPLE</NavLink>
