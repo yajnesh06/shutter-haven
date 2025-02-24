@@ -109,24 +109,6 @@ Add image information to your Supabase database with:
 - Test across different devices and screen sizes
 - Follow React Query best practices for data fetching
 
-## Performance Optimizations
-
-- Progressive image loading strategy
-- Efficient caching with React Query
-- Optimized bundle size
-- Route-based code splitting
-- Image lazy loading
-- Prefetching of adjacent categories
-
-## Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-- iOS Safari
-- Chrome for Android
-
 ## Contributing
 
 1. Fork the repository
