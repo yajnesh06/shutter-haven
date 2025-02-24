@@ -11,6 +11,11 @@ const Index = () => {
   const category = location.pathname.substring(1) as 'people' | 'animals' | 'landscapes' | '';
   const { images, isLoading, error } = useImages(category || undefined);
 
+  console.log('Current category:', category);
+  console.log('Images loaded:', images);
+  console.log('Loading state:', isLoading);
+  console.log('Error state:', error);
+
   if (error) {
     console.error('Error loading images:', error);
     return (
