@@ -8,4 +8,5 @@ export interface ImageType {
   height: number;
   title: string;
   category: ImageCategory;
+  blur_hash?: string;  // Added this optional property
 }
