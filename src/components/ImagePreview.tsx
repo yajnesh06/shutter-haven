@@ -31,7 +31,7 @@ export const ImagePreview = ({ image, onClose }: ImagePreviewProps) => {
         >
           <button
             onClick={onClose}
-            className="absolute -top-12 right-4 p-2 text-white hover:text-gray-300 transition-colors"
+            className="absolute -top-4 right-4 p-2 text-white hover:text-gray-300 transition-colors"
             aria-label="Close preview"
           >
             <X className="w-7 h-7 scale-120" /> {/* Increased size by 20% */}
