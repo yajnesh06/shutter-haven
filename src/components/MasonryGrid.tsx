@@ -4,34 +4,35 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ImageType } from '@/types';
 import { useInView } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
+import { ImagePreview } from './ImagePreview';
 
 interface MasonryGridProps {
   images: ImageType[];
 }
 
-const ImageCard = ({ image, index }: { image: ImageType; index: number }) => {
+const ImageCard = ({ image, index, onImageClick }: { 
+  image: ImageType; 
+  index: number;
+  onImageClick: (image: ImageType) => void;
+}) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "200px" }); // Increased margin for earlier loading
+  const isInView = useInView(ref, { once: true, margin: "200px" });
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentSrc, setCurrentSrc] = useState<string | null>(null);
 
-  // Enhanced progressive loading strategy
   useEffect(() => {
     if (!isInView) return;
 
-    // Load thumbnail first
     const thumbLoader = new Image();
-    thumbLoader.src = `${image.url}?width=100`; // Tiny thumbnail for instant display
+    thumbLoader.src = `${image.url}?width=100`;
     thumbLoader.onload = () => {
       setCurrentSrc(thumbLoader.src);
 
-      // Then load medium quality
       const mediumLoader = new Image();
       mediumLoader.src = `${image.url}?width=800`;
       mediumLoader.onload = () => {
         setCurrentSrc(mediumLoader.src);
 
-        // Finally load full quality
         const fullLoader = new Image();
         fullLoader.src = image.url;
         fullLoader.onload = () => {
@@ -46,7 +47,6 @@ const ImageCard = ({ image, index }: { image: ImageType; index: number }) => {
     };
   }, [isInView, image.url]);
 
-  // Create placeholder background
   const blurDataURL = image.blur_hash || 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4dHRsdHR4dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/2wBDAR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=';
 
   return (
@@ -62,6 +62,7 @@ const ImageCard = ({ image, index }: { image: ImageType; index: number }) => {
         ease: [0.43, 0.13, 0.23, 0.96]
       }}
       className="relative mb-4 break-inside-avoid"
+      onClick={() => onImageClick(image)}
     >
       <div
         className="group relative cursor-pointer overflow-hidden"
@@ -69,7 +70,6 @@ const ImageCard = ({ image, index }: { image: ImageType; index: number }) => {
           paddingBottom: `${(image.height / image.width) * 100}%`,
         }}
       >
-        {/* Blur placeholder */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-500"
           style={{
@@ -80,9 +80,9 @@ const ImageCard = ({ image, index }: { image: ImageType; index: number }) => {
           }}
         />
         
-        {/* Progressive image loading */}
         {currentSrc && (
           <motion.img
+            layoutId={`image-${image.id}`}
             src={currentSrc}
             alt={image.title}
             fetchPriority={index < 4 ? "high" : "low"}
@@ -103,7 +103,6 @@ const ImageCard = ({ image, index }: { image: ImageType; index: number }) => {
           />
         )}
 
-        {/* Overlay with image details */}
         <motion.div 
           className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
           initial={{ opacity: 0 }}
@@ -126,8 +125,8 @@ const ImageCard = ({ image, index }: { image: ImageType; index: number }) => {
 
 export const MasonryGrid = ({ images }: MasonryGridProps) => {
   const queryClient = useQueryClient();
+  const [selectedImage, setSelectedImage] = useState<ImageType | null>(null);
 
-  // Prefetch adjacent categories
   useEffect(() => {
     const categories = ['people', 'animals', 'landscapes'];
     const currentCategory = images[0]?.category;
@@ -138,30 +137,49 @@ export const MasonryGrid = ({ images }: MasonryGridProps) => {
         const nextCategory = categories[(currentIndex + 1) % categories.length];
         const prevCategory = categories[(currentIndex - 1 + categories.length) % categories.length];
         
-        // Prefetch next and previous categories
         [nextCategory, prevCategory].forEach(category => {
           queryClient.prefetchQuery({
             queryKey: ['images', category],
             queryFn: () => import('@/services/imageService').then(m => m.getImages(category)),
-            staleTime: 5 * 60 * 1000, // 5 minutes
+            staleTime: 5 * 60 * 1000,
           });
         });
       }
     }
   }, [images, queryClient]);
 
+  const handleImageClick = (image: ImageType) => {
+    setSelectedImage(image);
+  };
+
+  const handleClosePreview = () => {
+    setSelectedImage(null);
+  };
+
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="columns-1 md:columns-2 lg:columns-3 gap-4 p-4"
-    >
-      <AnimatePresence mode="wait" initial={false}>
-        {images.map((image, index) => (
-          <ImageCard key={image.id} image={image} index={index} />
-        ))}
-      </AnimatePresence>
-    </motion.div>
+    <>
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        className="columns-1 md:columns-2 lg:columns-3 gap-4 p-4"
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          {images.map((image, index) => (
+            <ImageCard 
+              key={image.id} 
+              image={image} 
+              index={index} 
+              onImageClick={handleImageClick}
+            />
+          ))}
+        </AnimatePresence>
+      </motion.div>
+      
+      <ImagePreview 
+        image={selectedImage} 
+        onClose={handleClosePreview}
+      />
+    </>
   );
 };
