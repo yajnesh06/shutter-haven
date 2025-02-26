@@ -26,7 +26,7 @@ const Info = () => {
               className="w-48 h-48 rounded-full overflow-hidden"
             >
               <img 
-                src="https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?auto=format&fit=crop&w=400&h=400"
+                src="https://evjofjyjfzewjtzlkruw.supabase.co/storage/v1/object/public/images//profile.jpg"
                 alt="Eric Ryan Anderson"
                 className="w-full h-full object-cover"
               />
