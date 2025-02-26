@@ -46,7 +46,7 @@ const Info = () => {
               with the natural world.
         
             </p>
-              I am currently pursuing the my last of year of Engineering in Bangalore. I am based in 
+              I am currently in my last of year of my Engineering in Bangalore. I am based in 
               Coorg Karnataka. 
             <p>
               
