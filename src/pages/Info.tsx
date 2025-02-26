@@ -27,7 +27,7 @@ const Info = () => {
             >
               <img 
                 src="https://evjofjyjfzewjtzlkruw.supabase.co/storage/v1/object/public/images//profile.jpg"
-                alt="Eric Ryan Anderson"
+                alt="YP"
                 className="w-full h-full object-cover"
               />
             </motion.div>
@@ -44,11 +44,12 @@ const Info = () => {
               A passionate photographer capturing the essence of life through my lens. Specializing in 
               portrait, wildlife, and landscape photography, I strive to tell stories that connect people 
               with the natural world.
+        
             </p>
+              I am currently pursuing the my last of year of Engineering in Bangalore. I am based in 
+              Coorg Karnataka. 
             <p>
-              Based in New York City, I travel extensively to capture diverse perspectives and stories 
-              from around the globe. My work has been featured in various publications and galleries 
-              internationally.
+              
             </p>
           </motion.div>
 
@@ -59,8 +60,8 @@ const Info = () => {
             className="pt-8"
           >
             <h2 className="text-2xl font-semibold mb-4">Contact</h2>
-            <p className="text-gray-600">email@ericryananderson.com</p>
-            <p className="text-gray-600">Instagram: @ericryananderson</p>
+            <p className="text-gray-600">yajnuponnappa@gmail.com</p>
+            <p className="text-gray-600"></p>
           </motion.div>
         </div>
       </motion.div>
