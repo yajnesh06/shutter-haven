@@ -100,34 +100,6 @@ Add image information to your Supabase database with:
 - Prefetching of adjacent categories
 - Optimized image caching with React Query
 
-## Development Guidelines
-
-- Follow TypeScript types and interfaces
-- Maintain component structure
-- Use Tailwind CSS for styling
-- Implement responsive design patterns
-- Test across different devices and screen sizes
-- Follow React Query best practices for data fetching
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## Deployment
-
-The application can be built for production using:
-
-```bash
-npm run build
-# or
-yarn build
-```
-
-The built files will be in the `dist` directory, ready for deployment to your chosen hosting platform.
 
 ## Troubleshooting
 
