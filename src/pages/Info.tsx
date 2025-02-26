@@ -31,7 +31,7 @@ const Info = () => {
                 className="w-full h-full object-cover"
               />
             </motion.div>
-            <h1 className="text-4xl font-bold text-center">Eric Ryan Anderson</h1>
+            <h1 className="text-4xl font-bold text-center">Yajnesh Ponnappa</h1>
           </motion.div>
           
           <motion.div 
