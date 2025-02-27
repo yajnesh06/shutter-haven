@@ -19,6 +19,7 @@ const ImageCard = ({ image, index, onImageClick }: {
   const isInView = useInView(ref, { once: true, margin: "200px" });
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentSrc, setCurrentSrc] = useState<string | null>(null);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     if (!isInView) return;
@@ -63,6 +64,8 @@ const ImageCard = ({ image, index, onImageClick }: {
       }}
       className="relative mb-4 break-inside-avoid"
       onClick={() => onImageClick(image)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <div
         className="group relative cursor-pointer overflow-hidden"
@@ -104,14 +107,15 @@ const ImageCard = ({ image, index, onImageClick }: {
         )}
 
         <motion.div 
-          className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          className="absolute inset-0 bg-black/30"
           initial={{ opacity: 0 }}
-          whileHover={{ opacity: 1 }}
+          animate={{ opacity: isHovered ? 1 : 0 }}
+          transition={{ duration: 0.2 }}
         >
           <motion.div 
             className="absolute bottom-0 left-0 right-0 p-4 text-white"
             initial={{ y: 20, opacity: 0 }}
-            whileHover={{ y: 0, opacity: 1 }}
+            animate={{ y: isHovered ? 0 : 20, opacity: isHovered ? 1 : 0 }}
             transition={{ duration: 0.2 }}
           >
             <h3 className="text-lg font-medium">{image.title}</h3>
