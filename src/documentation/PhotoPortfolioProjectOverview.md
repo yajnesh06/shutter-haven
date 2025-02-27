@@ -14,6 +14,7 @@ This document provides a comprehensive technical overview of the Photography Por
 5. [State Management](#state-management)
 6. [Performance Optimizations](#performance-optimizations)
 7. [Deployment Considerations](#deployment-considerations)
+8. [Project File Structure](#project-file-structure)
 
 ## Architecture
 
@@ -226,6 +227,56 @@ Recommendations for production monitoring:
 - Web Vitals tracking for core metrics
 - Error tracking with services like Sentry
 - Analytics for user behavior insights
+
+## Project File Structure
+
+```
+src/
+├── components/         # Reusable UI components
+│   ├── Layout.tsx      # Main layout with navigation
+│   ├── MasonryGrid.tsx # Image grid with loading logic
+│   ├── ImagePreview.tsx # Full-screen image viewer
+│   └── ui/             # UI components from shadcn
+│
+├── hooks/              # Custom React hooks
+│   └── useImages.ts    # Data fetching hook with React Query
+│
+├── integrations/       # External service integrations
+│   └── supabase/       # Supabase client configuration
+│       ├── client.ts   # Supabase client setup
+│       └── types.ts    # Supabase database types
+│
+├── pages/              # Route-specific components
+│   ├── Index.tsx       # Main gallery page with filtering
+│   ├── Info.tsx        # Information about the portfolio
+│   └── NotFound.tsx    # 404 page
+│
+├── services/           # API and data services
+│   └── imageService.ts # Image fetching logic
+│
+├── types/              # TypeScript type definitions
+│   └── index.ts        # Shared interfaces and types
+│
+├── lib/                # Utility functions
+│   └── utils.ts        # Helper functions and utilities
+│
+├── documentation/      # Project documentation
+│   └── PhotoPortfolioProjectOverview.md  # This document
+│
+└── App.tsx             # Main application component
+```
+
+### Key Files and Their Purpose
+
+| File | Purpose |
+|------|---------|
+| `App.tsx` | Main application component with routing setup |
+| `Layout.tsx` | Page structure with navigation and responsive design |
+| `MasonryGrid.tsx` | Core component for displaying images in a masonry layout |
+| `ImagePreview.tsx` | Modal component for full-screen image viewing |
+| `useImages.ts` | Custom hook for fetching and caching images |
+| `imageService.ts` | Service for interacting with Supabase |
+| `client.ts` | Supabase client configuration |
 
 ---
 
