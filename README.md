@@ -9,6 +9,7 @@ A responsive photography portfolio application built with React, TypeScript, and
 - Smooth animations and transitions using Framer Motion
 - Category-based filtering (People, Animals, Landscapes)
 - Interactive hover effects with image details
+- Mobile-optimized image preview with responsive controls
 - Optimized image loading with blur placeholders
 - Real-time data fetching with React Query
 - Supabase integration for image storage and management
@@ -100,6 +101,13 @@ Add image information to your Supabase database with:
 - Prefetching of adjacent categories
 - Optimized image caching with React Query
 
+## Mobile Experience
+
+- Fully responsive design for all screen sizes
+- Touch-friendly interface with appropriate tap targets
+- Optimized image previews for mobile devices
+- Adaptive UI elements that respond to screen size
+- Smooth animations optimized for mobile performance
 
 ## Troubleshooting
 
