@@ -76,7 +76,8 @@ export const ImageUploader = () => {
         setPreview(null);
         
         // Refresh the current page or navigate to the newly uploaded image's category
-        navigate(category === '' ? '/' : `/${category}`, { replace: true });
+        // Fix the type error by checking if the string is empty rather than comparing directly
+        navigate(category.length === 0 ? '/' : `/${category}`, { replace: true });
         window.location.reload(); // Quick way to refresh data
       } else {
         throw new Error("Upload failed");
