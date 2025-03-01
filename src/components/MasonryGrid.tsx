@@ -10,6 +10,26 @@ interface MasonryGridProps {
   images: ImageType[];
 }
 
+const getTransformedImageUrl = (url: string, width?: number): string => {
+  if (!url) return '';
+  
+  // Check if the URL is from Supabase
+  if (url.includes('supabase.co/storage/v1/object/public')) {
+    // Extract the base URL and the path
+    const [baseUrl, path] = url.split('/public/');
+    if (!baseUrl || !path) return url;
+    
+    // Format for Supabase transformation
+    if (width) {
+      return `${baseUrl}/public/transform/width=${width},quality=80/${path}`;
+    }
+    return url;
+  }
+  
+  // Return original URL if not Supabase or no transformation needed
+  return url;
+};
+
 const ImageCard = ({ image, index, onImageClick }: { 
   image: ImageType; 
   index: number;
@@ -24,16 +44,19 @@ const ImageCard = ({ image, index, onImageClick }: {
   useEffect(() => {
     if (!isInView) return;
 
+    // Stage 1: Thumbnail loading (100px width)
     const thumbLoader = new Image();
-    thumbLoader.src = `${image.url}?width=100`;
+    thumbLoader.src = getTransformedImageUrl(image.url, 100);
     thumbLoader.onload = () => {
       setCurrentSrc(thumbLoader.src);
 
+      // Stage 2: Medium resolution loading (800px width)
       const mediumLoader = new Image();
-      mediumLoader.src = `${image.url}?width=800`;
+      mediumLoader.src = getTransformedImageUrl(image.url, 800);
       mediumLoader.onload = () => {
         setCurrentSrc(mediumLoader.src);
 
+        // Stage 3: Full resolution loading
         const fullLoader = new Image();
         fullLoader.src = image.url;
         fullLoader.onload = () => {
