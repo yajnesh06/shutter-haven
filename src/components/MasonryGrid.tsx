@@ -40,34 +40,81 @@ const ImageCard = ({ image, index, onImageClick }: {
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentSrc, setCurrentSrc] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
-    if (!isInView) return;
+    if (!isInView || !image.url) return;
 
+    console.log('Loading image:', image.url);
+    
     // Stage 1: Thumbnail loading (100px width)
     const thumbLoader = new Image();
     thumbLoader.src = getTransformedImageUrl(image.url, 100);
+    
     thumbLoader.onload = () => {
+      console.log('Thumbnail loaded:', thumbLoader.src);
       setCurrentSrc(thumbLoader.src);
 
       // Stage 2: Medium resolution loading (800px width)
       const mediumLoader = new Image();
       mediumLoader.src = getTransformedImageUrl(image.url, 800);
+      
       mediumLoader.onload = () => {
+        console.log('Medium image loaded:', mediumLoader.src);
         setCurrentSrc(mediumLoader.src);
 
         // Stage 3: Full resolution loading
         const fullLoader = new Image();
         fullLoader.src = image.url;
+        
+        fullLoader.onload = () => {
+          console.log('Full image loaded:', fullLoader.src);
+          setCurrentSrc(image.url);
+          setIsLoaded(true);
+        };
+        
+        fullLoader.onerror = () => {
+          console.error('Error loading full image:', image.url);
+          setLoadError(true);
+        };
+      };
+      
+      mediumLoader.onerror = () => {
+        console.error('Error loading medium image:', mediumLoader.src);
+        // Try loading the original directly
+        const fullLoader = new Image();
+        fullLoader.src = image.url;
+        
         fullLoader.onload = () => {
           setCurrentSrc(image.url);
           setIsLoaded(true);
         };
+        
+        fullLoader.onerror = () => {
+          setLoadError(true);
+        };
+      };
+    };
+    
+    thumbLoader.onerror = () => {
+      console.error('Error loading thumbnail:', thumbLoader.src);
+      // Try loading the original directly
+      const fullLoader = new Image();
+      fullLoader.src = image.url;
+      
+      fullLoader.onload = () => {
+        setCurrentSrc(image.url);
+        setIsLoaded(true);
+      };
+      
+      fullLoader.onerror = () => {
+        setLoadError(true);
       };
     };
 
     return () => {
       thumbLoader.onload = null;
+      thumbLoader.onerror = null;
     };
   }, [isInView, image.url]);
 
@@ -106,7 +153,13 @@ const ImageCard = ({ image, index, onImageClick }: {
           }}
         />
         
-        {currentSrc && (
+        {loadError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
+            <p className="text-gray-500 text-sm">Failed to load image</p>
+          </div>
+        )}
+        
+        {currentSrc && !loadError && (
           <motion.img
             layoutId={`image-${image.id}`}
             src={currentSrc}
@@ -123,6 +176,10 @@ const ImageCard = ({ image, index, onImageClick }: {
               if (img.src === image.url && img.complete) {
                 setIsLoaded(true);
               }
+            }}
+            onError={() => {
+              console.error('Error in img tag:', currentSrc);
+              setLoadError(true);
             }}
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.3 }}
@@ -155,6 +212,13 @@ export const MasonryGrid = ({ images }: MasonryGridProps) => {
   const [selectedImage, setSelectedImage] = useState<ImageType | null>(null);
 
   useEffect(() => {
+    if (!images || images.length === 0) {
+      console.log('No images to display');
+      return;
+    }
+    
+    console.log('Rendering masonry grid with images:', images);
+    
     const categories = ['people', 'animals', 'landscapes'];
     const currentCategory = images[0]?.category;
     
@@ -192,14 +256,20 @@ export const MasonryGrid = ({ images }: MasonryGridProps) => {
         className="columns-1 md:columns-2 lg:columns-3 gap-4 p-4"
       >
         <AnimatePresence mode="wait" initial={false}>
-          {images.map((image, index) => (
-            <ImageCard 
-              key={image.id} 
-              image={image} 
-              index={index} 
-              onImageClick={handleImageClick}
-            />
-          ))}
+          {images && images.length > 0 ? (
+            images.map((image, index) => (
+              <ImageCard 
+                key={image.id} 
+                image={image} 
+                index={index} 
+                onImageClick={handleImageClick}
+              />
+            ))
+          ) : (
+            <div className="col-span-full p-8 text-center">
+              <p className="text-gray-500">No images found in this category</p>
+            </div>
+          )}
         </AnimatePresence>
       </motion.div>
       

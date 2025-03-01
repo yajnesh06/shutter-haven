@@ -1,20 +1,32 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Layout } from '@/components/Layout';
 import { MasonryGrid } from '@/components/MasonryGrid';
 import { useLocation } from 'react-router-dom';
 import { useImages } from '@/hooks/useImages';
 import { Loader2 } from 'lucide-react';
+import { ImageType } from '@/types';
 
 const Index = () => {
   const location = useLocation();
   const category = location.pathname.substring(1) as 'people' | 'animals' | 'landscapes' | '';
   const { images, isLoading, error } = useImages(category || undefined);
 
-  console.log('Current category:', category);
-  console.log('Images loaded:', images);
-  console.log('Loading state:', isLoading);
-  console.log('Error state:', error);
+  // Additional debugging for image loading
+  useEffect(() => {
+    console.log('Current category:', category);
+    console.log('Images loaded:', images);
+    console.log('Loading state:', isLoading);
+    console.log('Error state:', error);
+    
+    if (images && images.length > 0) {
+      images.forEach((img: ImageType) => {
+        console.log(`Image ${img.id}: ${img.title} - URL: ${img.url}`);
+      });
+    } else if (!isLoading) {
+      console.log('No images found for category:', category || 'all');
+    }
+  }, [category, images, isLoading, error]);
 
   if (error) {
     console.error('Error loading images:', error);
