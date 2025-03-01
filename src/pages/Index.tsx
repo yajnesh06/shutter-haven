@@ -5,14 +5,14 @@ import { MasonryGrid } from '@/components/MasonryGrid';
 import { useLocation } from 'react-router-dom';
 import { useImages } from '@/hooks/useImages';
 import { Loader2 } from 'lucide-react';
-import { ImageType } from '@/types';
+import { ImageCategory, ImageType } from '@/types';
 import { toast } from '@/components/ui/use-toast';
 import { ImageUploader } from '@/components/ImageUploader';
 import { Button } from '@/components/ui/button';
 
 const Index = () => {
   const location = useLocation();
-  const category = location.pathname.substring(1) as 'people' | 'animals' | 'landscapes' | '';
+  const category = location.pathname.substring(1) as ImageCategory | '';
   const { images, isLoading, error } = useImages(category || undefined);
   const [showUploader, setShowUploader] = useState(false);
 

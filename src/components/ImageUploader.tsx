@@ -8,22 +8,23 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/components/ui/use-toast';
 import { Loader2, Upload } from 'lucide-react';
+import { ImageCategory } from '@/types';
 
 export const ImageUploader = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [category, setCategory] = useState<string>('');
+  const [category, setCategory] = useState<ImageCategory | ''>('');
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   
   // Get the current category from the route if available
-  const currentCategory = location.pathname.substring(1) as 'people' | 'animals' | 'landscapes' | '';
+  const currentCategory = location.pathname.substring(1) as ImageCategory | '';
 
   // Set the current category as default if available
   React.useEffect(() => {
     if (currentCategory && ['people', 'animals', 'landscapes'].includes(currentCategory)) {
-      setCategory(currentCategory);
+      setCategory(currentCategory as ImageCategory);
     }
   }, [currentCategory]);
 
@@ -75,7 +76,7 @@ export const ImageUploader = () => {
         setPreview(null);
         
         // Refresh the current page or navigate to the newly uploaded image's category
-        navigate(category === 'all' ? '/' : `/${category}`, { replace: true });
+        navigate(category === '' ? '/' : `/${category}`, { replace: true });
         window.location.reload(); // Quick way to refresh data
       } else {
         throw new Error("Upload failed");
@@ -123,7 +124,7 @@ export const ImageUploader = () => {
           <Label htmlFor="category">Category</Label>
           <Select 
             value={category} 
-            onValueChange={setCategory}
+            onValueChange={(value) => setCategory(value as ImageCategory)}
             disabled={isUploading}
           >
             <SelectTrigger className="w-full mt-1">

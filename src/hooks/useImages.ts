@@ -2,9 +2,9 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getImages } from '@/services/imageService';
 import { useEffect } from 'react';
-import { ImageType } from '@/types';
+import { ImageCategory, ImageType } from '@/types';
 
-export const useImages = (category?: string) => {
+export const useImages = (category?: ImageCategory | string) => {
   const queryClient = useQueryClient();
   
   // Main query for current category
@@ -16,8 +16,8 @@ export const useImages = (category?: string) => {
 
   // Prefetch adjacent categories
   useEffect(() => {
-    const categories = ['people', 'animals', 'landscapes'];
-    const currentIndex = categories.indexOf(category || '');
+    const categories: ImageCategory[] = ['people', 'animals', 'landscapes'];
+    const currentIndex = categories.indexOf(category as ImageCategory);
     
     if (currentIndex !== -1) {
       // Prefetch next and previous categories

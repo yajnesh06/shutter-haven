@@ -1,10 +1,10 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { ImageType } from "@/types";
+import { ImageCategory, ImageType } from "@/types";
 
 export const uploadImage = async (
   file: File,
-  category: 'people' | 'animals' | 'landscapes' | string
+  category: ImageCategory
 ): Promise<ImageType | null> => {
   try {
     // Generate a unique filename to avoid collisions
@@ -39,6 +39,7 @@ export const uploadImage = async (
         category,
         width: dimensions.width,
         height: dimensions.height,
+        storage_path: filePath, // Add the required storage_path field
       })
       .select()
       .single();
@@ -48,7 +49,9 @@ export const uploadImage = async (
       throw insertError;
     }
 
-    return imageData;
+    // TypeScript knows imageData has the correct shape, but let's use type assertion
+    // to ensure it conforms to our app's ImageType interface
+    return imageData as unknown as ImageType;
   } catch (error) {
     console.error('Upload failed:', error);
     return null;
