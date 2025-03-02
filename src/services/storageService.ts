@@ -14,6 +14,7 @@ interface ImageUploadOptions {
 const SUPABASE_URL = "https://evjofjyjfzewjtzlkruw.supabase.co";
 const SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2am9manlqZnpld2p0emxrcnV3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MDM4ODU5NSwiZXhwIjoyMDU1OTY0NTk1fQ.FoKlJFJDxcV35W-nAcRqaQ3SfcIQZmmaTFNWNZLQG-A";
 
+// Create a properly configured admin client that won't try to use browser sessions
 const adminSupabase = createClient(
   SUPABASE_URL,
   SUPABASE_SERVICE_ROLE_KEY,
@@ -55,7 +56,9 @@ export const uploadImage = async (file: File, options: ImageUploadOptions): Prom
     const fileName = `${crypto.randomUUID()}.${fileExt}`;
     const filePath = `${category}/${fileName}`;
     
-    // Upload to Supabase Storage using the admin client to bypass RLS
+    console.log(`Attempting to upload file to ${filePath} with admin client`);
+    
+    // Upload to Supabase Storage using the admin client
     const { data: uploadData, error: uploadError } = await adminSupabase.storage
       .from('images')
       .upload(filePath, file, {
@@ -64,6 +67,7 @@ export const uploadImage = async (file: File, options: ImageUploadOptions): Prom
       });
       
     if (uploadError) {
+      console.error('Storage upload error:', uploadError);
       throw new Error(`Error uploading image: ${uploadError.message}`);
     }
     
@@ -72,12 +76,14 @@ export const uploadImage = async (file: File, options: ImageUploadOptions): Prom
       onProgress(100);
     }
     
-    // Get the public URL
+    // Get the public URL using the same admin client
     const { data: { publicUrl } } = adminSupabase.storage
       .from('images')
       .getPublicUrl(filePath);
       
-    // Create entry in the images database
+    console.log(`Successfully uploaded file, public URL: ${publicUrl}`);
+    
+    // Create entry in the images database using the same admin client
     const { data: imageData, error: dbError } = await adminSupabase
       .from('images')
       .insert({
@@ -92,8 +98,11 @@ export const uploadImage = async (file: File, options: ImageUploadOptions): Prom
       .single();
       
     if (dbError) {
+      console.error('Database insert error:', dbError);
       throw new Error(`Error creating database entry: ${dbError.message}`);
     }
+    
+    console.log('Successfully created database entry:', imageData);
     
     return imageData as ImageType;
   } catch (error) {
