@@ -43,16 +43,16 @@ export const uploadImage = async (file: File, options: ImageUploadOptions): Prom
       .from('images')
       .upload(filePath, file, {
         cacheControl: '3600',
-        upsert: false,
-        onUploadProgress: ({ percent }) => {
-          if (onProgress) {
-            onProgress(Math.round(percent));
-          }
-        }
+        upsert: false
       });
       
     if (uploadError) {
       throw new Error(`Error uploading image: ${uploadError.message}`);
+    }
+    
+    // If progress callback is provided, call it with 100% after successful upload
+    if (onProgress) {
+      onProgress(100);
     }
     
     // Get the public URL

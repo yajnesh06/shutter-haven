@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -57,7 +56,7 @@ export const AdminUploader = () => {
         // Use the file name as title if no title is provided
         const imageTitle = title || fileName.split('.')[0];
         
-        // Upload the image
+        // Upload the image with progress callback
         await uploadImage(file, {
           title: imageTitle,
           category,
@@ -66,10 +65,6 @@ export const AdminUploader = () => {
             setUploadProgress({...newProgress});
           }
         });
-        
-        // Mark this file as complete
-        newProgress[fileName] = 100;
-        setUploadProgress({...newProgress});
       }
       
       toast({
