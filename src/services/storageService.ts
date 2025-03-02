@@ -1,12 +1,20 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { ImageCategory, ImageType } from "@/types";
+import { createClient } from "@supabase/supabase-js";
 
 interface ImageUploadOptions {
   title: string;
   category: ImageCategory;
   onProgress?: (progress: number) => void;
 }
+
+// Create an admin client using the service role key to bypass RLS
+// This should only be used for admin functions like this uploader
+const SUPABASE_URL = "https://evjofjyjfzewjtzlkruw.supabase.co";
+const SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2am9manlqZnpld2p0emxrcnV3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MDM4ODU5NSwiZXhwIjoyMDU1OTY0NTk1fQ.FoKlJFJDxcV35W-nAcRqaQ3SfcIQZmmaTFNWNZLQG-A";
+
+const adminSupabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 // Function to get image dimensions from File
 const getImageDimensions = (file: File): Promise<{ width: number; height: number }> => {
@@ -38,9 +46,8 @@ export const uploadImage = async (file: File, options: ImageUploadOptions): Prom
     const fileName = `${crypto.randomUUID()}.${fileExt}`;
     const filePath = `${category}/${fileName}`;
     
-    // Upload to Supabase Storage
-    // We temporarily bypass RLS using the service_role key for this admin uploader
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    // Upload to Supabase Storage using the admin client to bypass RLS
+    const { data: uploadData, error: uploadError } = await adminSupabase.storage
       .from('images')
       .upload(filePath, file, {
         cacheControl: '3600',
@@ -57,12 +64,12 @@ export const uploadImage = async (file: File, options: ImageUploadOptions): Prom
     }
     
     // Get the public URL
-    const { data: { publicUrl } } = supabase.storage
+    const { data: { publicUrl } } = adminSupabase.storage
       .from('images')
       .getPublicUrl(filePath);
       
     // Create entry in the images database
-    const { data: imageData, error: dbError } = await supabase
+    const { data: imageData, error: dbError } = await adminSupabase
       .from('images')
       .insert({
         title,
