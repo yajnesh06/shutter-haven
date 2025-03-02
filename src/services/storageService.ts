@@ -39,6 +39,7 @@ export const uploadImage = async (file: File, options: ImageUploadOptions): Prom
     const filePath = `${category}/${fileName}`;
     
     // Upload to Supabase Storage
+    // We temporarily bypass RLS using the service_role key for this admin uploader
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('images')
       .upload(filePath, file, {
