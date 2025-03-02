@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,17 +15,20 @@ export const AdminUploader = () => {
   const [files, setFiles] = useState<FileList | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<{[key: string]: number}>({});
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFiles(e.target.files);
+      setErrorMessage(null);
     }
   };
 
   const resetForm = () => {
     setTitle('');
     setFiles(null);
+    setErrorMessage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -41,6 +45,7 @@ export const AdminUploader = () => {
     }
 
     setIsUploading(true);
+    setErrorMessage(null);
     const newProgress: {[key: string]: number} = {};
     
     try {
@@ -75,9 +80,11 @@ export const AdminUploader = () => {
       resetForm();
     } catch (error) {
       console.error("Upload error:", error);
+      const errorMsg = error instanceof Error ? error.message : "An unknown error occurred";
+      setErrorMessage(errorMsg);
       toast({
         title: "Upload failed",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
+        description: errorMsg,
         variant: "destructive"
       });
     } finally {
@@ -144,6 +151,13 @@ export const AdminUploader = () => {
                 </li>
               ))}
             </ul>
+          </div>
+        )}
+        
+        {errorMessage && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-sm text-red-800 font-medium">Error:</p>
+            <p className="text-xs text-red-700">{errorMessage}</p>
           </div>
         )}
         

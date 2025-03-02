@@ -9,12 +9,13 @@ interface ImageUploadOptions {
   onProgress?: (progress: number) => void;
 }
 
-// Create an admin client using the service role key to bypass RLS
-// This should only be used for admin functions like this uploader
+// For accessing Supabase from the browser using the Admin/Service role
+// This should only be used for development/testing purposes
+// In production, sensitive operations should be moved to a server-side API
 const SUPABASE_URL = "https://evjofjyjfzewjtzlkruw.supabase.co";
 const SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2am9manlqZnpld2p0emxrcnV3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MDM4ODU5NSwiZXhwIjoyMDU1OTY0NTk1fQ.FoKlJFJDxcV35W-nAcRqaQ3SfcIQZmmaTFNWNZLQG-A";
 
-// Create a properly configured admin client that won't try to use browser sessions
+// Create a fetch-based client that will work in browser environments
 const adminSupabase = createClient(
   SUPABASE_URL,
   SUPABASE_SERVICE_ROLE_KEY,
@@ -22,6 +23,9 @@ const adminSupabase = createClient(
     auth: {
       autoRefreshToken: false,
       persistSession: false
+    },
+    global: {
+      fetch: fetch.bind(globalThis)
     }
   }
 );
@@ -57,6 +61,22 @@ export const uploadImage = async (file: File, options: ImageUploadOptions): Prom
     const filePath = `${category}/${fileName}`;
     
     console.log(`Attempting to upload file to ${filePath} with admin client`);
+    
+    // First check if the bucket exists, if not create it
+    const { data: buckets } = await adminSupabase.storage.listBuckets();
+    const imagesBucketExists = buckets?.some(bucket => bucket.name === 'images');
+    
+    if (!imagesBucketExists) {
+      console.log('Images bucket does not exist, creating it');
+      const { error: bucketError } = await adminSupabase.storage.createBucket('images', {
+        public: true
+      });
+      
+      if (bucketError) {
+        console.error('Bucket creation error:', bucketError);
+        throw new Error(`Error creating images bucket: ${bucketError.message}`);
+      }
+    }
     
     // Upload to Supabase Storage using the admin client
     const { data: uploadData, error: uploadError } = await adminSupabase.storage
