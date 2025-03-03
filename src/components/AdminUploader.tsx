@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ImageCategory } from '@/types';
 import { uploadImage } from '@/services/storageService';
 import { toast } from '@/components/ui/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertTriangle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export const AdminUploader = () => {
   const [title, setTitle] = useState('');
@@ -95,6 +96,20 @@ export const AdminUploader = () => {
   return (
     <div className="bg-card p-6 rounded-lg shadow-md border border-border">
       <h2 className="text-xl font-bold mb-4">Temporary Admin Uploader</h2>
+      
+      {errorMessage && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>
+            {errorMessage}
+            <div className="mt-2 text-xs">
+              <p>Note: You may need to create an 'images' bucket in your Supabase project with public access.</p>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
+      
       <div className="space-y-4">
         <div>
           <Label htmlFor="title">Image Title (optional, will use filename if empty)</Label>
@@ -151,13 +166,6 @@ export const AdminUploader = () => {
                 </li>
               ))}
             </ul>
-          </div>
-        )}
-        
-        {errorMessage && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-sm text-red-800 font-medium">Error:</p>
-            <p className="text-xs text-red-700">{errorMessage}</p>
           </div>
         )}
         

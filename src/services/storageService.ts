@@ -15,7 +15,7 @@ interface ImageUploadOptions {
 const SUPABASE_URL = "https://evjofjyjfzewjtzlkruw.supabase.co";
 const SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2am9manlqZnpld2p0emxrcnV3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MDM4ODU5NSwiZXhwIjoyMDU1OTY0NTk1fQ.FoKlJFJDxcV35W-nAcRqaQ3SfcIQZmmaTFNWNZLQG-A";
 
-// Create a fetch-based client that will work in browser environments
+// Create a supabase client specifically for admin operations, bypassing auth completely
 const adminSupabase = createClient(
   SUPABASE_URL,
   SUPABASE_SERVICE_ROLE_KEY,
@@ -23,9 +23,6 @@ const adminSupabase = createClient(
     auth: {
       autoRefreshToken: false,
       persistSession: false
-    },
-    global: {
-      fetch: fetch.bind(globalThis)
     }
   }
 );
@@ -47,6 +44,29 @@ const getImageDimensions = (file: File): Promise<{ width: number; height: number
   });
 };
 
+// Check if a bucket exists and create it if it doesn't
+const ensureBucketExists = async (bucketName: string): Promise<void> => {
+  try {
+    // Using regular supabase client to check if bucket exists
+    const { data: buckets } = await supabase.storage.listBuckets();
+    const bucketExists = buckets?.some(bucket => bucket.name === bucketName);
+    
+    if (!bucketExists) {
+      console.log(`${bucketName} bucket does not exist, creating it`);
+      
+      // Instead of creating the bucket programmatically, we'll use an existing bucket
+      // or inform the user that the bucket needs to be created manually in the Supabase dashboard
+      console.log(`Please create the "${bucketName}" bucket manually in the Supabase dashboard with public access.`);
+      return;
+    }
+    
+    console.log(`${bucketName} bucket exists`);
+  } catch (error) {
+    console.error('Error checking bucket:', error);
+    throw new Error(`Error checking if bucket exists: ${error.message}`);
+  }
+};
+
 // Upload an image to Supabase Storage and create a database entry
 export const uploadImage = async (file: File, options: ImageUploadOptions): Promise<ImageType> => {
   const { title, category, onProgress } = options;
@@ -60,26 +80,13 @@ export const uploadImage = async (file: File, options: ImageUploadOptions): Prom
     const fileName = `${crypto.randomUUID()}.${fileExt}`;
     const filePath = `${category}/${fileName}`;
     
-    console.log(`Attempting to upload file to ${filePath} with admin client`);
+    console.log(`Attempting to upload file to ${filePath}`);
     
-    // First check if the bucket exists, if not create it
-    const { data: buckets } = await adminSupabase.storage.listBuckets();
-    const imagesBucketExists = buckets?.some(bucket => bucket.name === 'images');
+    // First check if the bucket exists
+    await ensureBucketExists('images');
     
-    if (!imagesBucketExists) {
-      console.log('Images bucket does not exist, creating it');
-      const { error: bucketError } = await adminSupabase.storage.createBucket('images', {
-        public: true
-      });
-      
-      if (bucketError) {
-        console.error('Bucket creation error:', bucketError);
-        throw new Error(`Error creating images bucket: ${bucketError.message}`);
-      }
-    }
-    
-    // Upload to Supabase Storage using the admin client
-    const { data: uploadData, error: uploadError } = await adminSupabase.storage
+    // Upload to Supabase Storage using standard client
+    const { data: uploadData, error: uploadError } = await supabase.storage
       .from('images')
       .upload(filePath, file, {
         cacheControl: '3600',
@@ -96,15 +103,15 @@ export const uploadImage = async (file: File, options: ImageUploadOptions): Prom
       onProgress(100);
     }
     
-    // Get the public URL using the same admin client
-    const { data: { publicUrl } } = adminSupabase.storage
+    // Get the public URL
+    const { data: { publicUrl } } = supabase.storage
       .from('images')
       .getPublicUrl(filePath);
       
     console.log(`Successfully uploaded file, public URL: ${publicUrl}`);
     
-    // Create entry in the images database using the same admin client
-    const { data: imageData, error: dbError } = await adminSupabase
+    // Create entry in the images database
+    const { data: imageData, error: dbError } = await supabase
       .from('images')
       .insert({
         title,

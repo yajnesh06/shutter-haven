@@ -4,11 +4,12 @@ import { Layout } from '@/components/Layout';
 import { MasonryGrid } from '@/components/MasonryGrid';
 import { useLocation } from 'react-router-dom';
 import { useImages } from '@/hooks/useImages';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Info } from 'lucide-react';
 import { ImageType } from '@/types';
 import { toast } from '@/components/ui/use-toast';
 import { AdminUploader } from '@/components/AdminUploader';
 import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const Index = () => {
   const location = useLocation();
@@ -66,6 +67,13 @@ const Index = () => {
 
   return (
     <Layout>
+      <Alert className="mb-4 bg-blue-50 text-blue-800 border-blue-200">
+        <Info className="h-4 w-4" />
+        <AlertDescription>
+          For uploads to work, you need to create an <strong>images</strong> bucket in Supabase Storage with public access.
+        </AlertDescription>
+      </Alert>
+      
       <div className="mb-4 flex justify-end">
         <Button 
           onClick={toggleUploader} 
