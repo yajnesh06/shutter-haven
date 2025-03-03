@@ -15,14 +15,15 @@ const getTransformedImageUrl = (url: string, width?: number): string => {
   
   // Check if the URL is from Supabase
   if (url.includes('supabase.co/storage/v1/object/public')) {
-    // For Supabase, the correct transformation format is:
-    // https://[project-ref].supabase.co/storage/v1/object/public/images/[filename]?width=100&quality=80
-    const urlWithParams = new URL(url);
+    // Extract the base URL and the path
+    const [baseUrl, path] = url.split('/public/');
+    if (!baseUrl || !path) return url;
+    
+    // Format for Supabase transformation
     if (width) {
-      urlWithParams.searchParams.set('width', width.toString());
-      urlWithParams.searchParams.set('quality', '80');
+      return `${baseUrl}/public/transform/width=${width},quality=80/${path}`;
     }
-    return urlWithParams.toString();
+    return url;
   }
   
   // Return original URL if not Supabase or no transformation needed
@@ -117,10 +118,6 @@ const ImageCard = ({ image, index, onImageClick }: {
     };
   }, [isInView, image.url]);
 
-  // Calculate aspect ratio for the container
-  // This ensures the image is displayed with the correct proportions
-  const aspectRatio = image.height && image.width ? image.height / image.width : 1.5;
-  
   const blurDataURL = image.blur_hash || 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4dHRsdHR4dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/2wBDAR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=';
 
   return (
@@ -141,9 +138,9 @@ const ImageCard = ({ image, index, onImageClick }: {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className="group relative cursor-pointer overflow-hidden rounded-md"
+        className="group relative cursor-pointer overflow-hidden"
         style={{
-          paddingBottom: `${aspectRatio * 100}%`,
+          paddingBottom: `${(image.height / image.width) * 100}%`,
         }}
       >
         <div
