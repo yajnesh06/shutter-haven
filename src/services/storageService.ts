@@ -40,7 +40,7 @@ export const uploadImage = async (file: File, options: ImageUploadOptions): Prom
     
     console.log(`Attempting to upload file to ${filePath}`);
     
-    // Upload to Supabase Storage using standard client
+    // Upload to Supabase Storage
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('images')
       .upload(filePath, file, {

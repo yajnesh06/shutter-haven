@@ -4,12 +4,11 @@ import { Layout } from '@/components/Layout';
 import { MasonryGrid } from '@/components/MasonryGrid';
 import { useLocation } from 'react-router-dom';
 import { useImages } from '@/hooks/useImages';
-import { Loader2, Info, AlertTriangle } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { ImageType } from '@/types';
 import { toast } from '@/components/ui/use-toast';
 import { AdminUploader } from '@/components/AdminUploader';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const Index = () => {
   const location = useLocation();
@@ -67,20 +66,6 @@ const Index = () => {
 
   return (
     <Layout>
-      <Alert className="mb-4 bg-yellow-50 text-yellow-800 border-yellow-200">
-        <AlertTriangle className="h-4 w-4" />
-        <AlertTitle>Important Setup Required</AlertTitle>
-        <AlertDescription>
-          <p className="font-semibold">Before uploads will work, you must:</p>
-          <ol className="list-decimal pl-5 mt-2 space-y-1">
-            <li>Go to your Supabase project dashboard</li>
-            <li>Navigate to Storage section</li>
-            <li>Create a bucket named exactly "<strong>images</strong>"</li>
-            <li>Set the bucket access to "public"</li>
-          </ol>
-        </AlertDescription>
-      </Alert>
-      
       <div className="mb-4 flex justify-end">
         <Button 
           onClick={toggleUploader} 
