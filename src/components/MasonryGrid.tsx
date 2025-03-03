@@ -253,7 +253,7 @@ export const MasonryGrid = ({ images }: MasonryGridProps) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
-        className="columns-1 md:columns-2 lg:columns-3 gap-4 p-4"
+        className="columns-1 md:columns-2 lg:columns-4 gap-4 p-4"
       >
         <AnimatePresence mode="wait" initial={false}>
           {images && images.length > 0 ? (
