@@ -1,31 +1,12 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { ImageCategory, ImageType } from "@/types";
-import { createClient } from "@supabase/supabase-js";
 
 interface ImageUploadOptions {
   title: string;
   category: ImageCategory;
   onProgress?: (progress: number) => void;
 }
-
-// For accessing Supabase from the browser using the Admin/Service role
-// This should only be used for development/testing purposes
-// In production, sensitive operations should be moved to a server-side API
-const SUPABASE_URL = "https://evjofjyjfzewjtzlkruw.supabase.co";
-const SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV2am9manlqZnpld2p0emxrcnV3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MDM4ODU5NSwiZXhwIjoyMDU1OTY0NTk1fQ.FoKlJFJDxcV35W-nAcRqaQ3SfcIQZmmaTFNWNZLQG-A";
-
-// Create a supabase client specifically for admin operations, bypassing auth completely
-const adminSupabase = createClient(
-  SUPABASE_URL,
-  SUPABASE_SERVICE_ROLE_KEY,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }
-);
 
 // Function to get image dimensions from File
 const getImageDimensions = (file: File): Promise<{ width: number; height: number }> => {
@@ -44,29 +25,6 @@ const getImageDimensions = (file: File): Promise<{ width: number; height: number
   });
 };
 
-// Check if a bucket exists and create it if it doesn't
-const ensureBucketExists = async (bucketName: string): Promise<void> => {
-  try {
-    // Using regular supabase client to check if bucket exists
-    const { data: buckets } = await supabase.storage.listBuckets();
-    const bucketExists = buckets?.some(bucket => bucket.name === bucketName);
-    
-    if (!bucketExists) {
-      console.log(`${bucketName} bucket does not exist, creating it`);
-      
-      // Instead of creating the bucket programmatically, we'll use an existing bucket
-      // or inform the user that the bucket needs to be created manually in the Supabase dashboard
-      console.log(`Please create the "${bucketName}" bucket manually in the Supabase dashboard with public access.`);
-      return;
-    }
-    
-    console.log(`${bucketName} bucket exists`);
-  } catch (error) {
-    console.error('Error checking bucket:', error);
-    throw new Error(`Error checking if bucket exists: ${error.message}`);
-  }
-};
-
 // Upload an image to Supabase Storage and create a database entry
 export const uploadImage = async (file: File, options: ImageUploadOptions): Promise<ImageType> => {
   const { title, category, onProgress } = options;
@@ -81,9 +39,6 @@ export const uploadImage = async (file: File, options: ImageUploadOptions): Prom
     const filePath = `${category}/${fileName}`;
     
     console.log(`Attempting to upload file to ${filePath}`);
-    
-    // First check if the bucket exists
-    await ensureBucketExists('images');
     
     // Upload to Supabase Storage using standard client
     const { data: uploadData, error: uploadError } = await supabase.storage

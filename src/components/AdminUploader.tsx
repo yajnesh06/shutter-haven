@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ImageCategory } from '@/types';
 import { uploadImage } from '@/services/storageService';
 import { toast } from '@/components/ui/use-toast';
-import { Loader2, AlertTriangle } from 'lucide-react';
+import { Loader2, AlertTriangle, ExternalLink } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export const AdminUploader = () => {
@@ -81,7 +81,13 @@ export const AdminUploader = () => {
       resetForm();
     } catch (error) {
       console.error("Upload error:", error);
-      const errorMsg = error instanceof Error ? error.message : "An unknown error occurred";
+      let errorMsg = error instanceof Error ? error.message : "An unknown error occurred";
+      
+      // Check for common bucket-related errors
+      if (errorMsg.includes("does not exist") || errorMsg.includes("bucket not found")) {
+        errorMsg = "The 'images' bucket does not exist in your Supabase project. Please create it in the Supabase dashboard.";
+      }
+      
       setErrorMessage(errorMsg);
       toast({
         title: "Upload failed",
@@ -103,9 +109,18 @@ export const AdminUploader = () => {
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>
             {errorMessage}
-            <div className="mt-2 text-xs">
-              <p>Note: You may need to create an 'images' bucket in your Supabase project with public access.</p>
-            </div>
+            {errorMessage.includes("bucket") && (
+              <div className="mt-3 p-3 bg-background/80 rounded border border-border">
+                <h4 className="font-medium">How to create the 'images' bucket:</h4>
+                <ol className="mt-2 space-y-1 ml-5 list-decimal text-sm">
+                  <li>Go to your Supabase project dashboard</li>
+                  <li>Navigate to Storage section</li>
+                  <li>Click "New Bucket" button</li>
+                  <li>Name it exactly "<strong>images</strong>"</li>
+                  <li>Make sure to set it as public</li>
+                </ol>
+              </div>
+            )}
           </AlertDescription>
         </Alert>
       )}
