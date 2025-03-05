@@ -3,6 +3,10 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { ImageType } from '@/types';
+import { useDisableRightClick } from '@/hooks/useDisableRightClick';
+
+function App() {
+  useDisableRightClick();
 
 interface ImagePreviewProps {
   image: ImageType | null;
