@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ImageType } from '@/types';
@@ -172,9 +173,9 @@ const ImageCard = ({ image, index, onImageClick }: {
               WebkitTouchCallout: 'none',
               WebkitUserSelect: 'none',
               userSelect: 'none',
-              draggable: 'false',
-              onDragStart: (e) => e.preventDefault(),
             }}
+            draggable="false"
+            onDragStart={(e) => e.preventDefault()}
             onLoad={(e) => {
               const img = e.target as HTMLImageElement;
               if (img.src === image.url && img.complete) {
