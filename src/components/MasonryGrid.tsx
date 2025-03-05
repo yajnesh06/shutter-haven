@@ -19,9 +19,11 @@ const getTransformedImageUrl = (url: string, width?: number): string => {
     const [baseUrl, path] = url.split('/public/');
     if (!baseUrl || !path) return url;
     
-    // Format for Supabase transformation
+    // Format for Supabase transformation with progressive quality based on size
     if (width) {
-      return `${baseUrl}/public/transform/width=${width},quality=80/${path}`;
+      // Use lower quality for thumbnails, higher for larger images
+      const quality = width <= 100 ? 60 : width <= 800 ? 75 : 85;
+      return `${baseUrl}/public/transform/width=${width},quality=${quality}/${path}`;
     }
     return url;
   }
@@ -36,75 +38,61 @@ const ImageCard = ({ image, index, onImageClick }: {
   onImageClick: (image: ImageType) => void;
 }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "200px" });
+  const isInView = useInView(ref, { once: true, margin: "400px" }); // Increased margin for earlier loading
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentSrc, setCurrentSrc] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [loadError, setLoadError] = useState(false);
+  const [loadingStage, setLoadingStage] = useState(0);
 
   useEffect(() => {
     if (!isInView || !image.url) return;
 
-    console.log('Loading image:', image.url);
+    // Determine if this image is critical (high priority)
+    const isPriority = index < 4;
     
     // Stage 1: Thumbnail loading (100px width)
     const thumbLoader = new Image();
     thumbLoader.src = getTransformedImageUrl(image.url, 100);
     
     thumbLoader.onload = () => {
-      console.log('Thumbnail loaded:', thumbLoader.src);
       setCurrentSrc(thumbLoader.src);
+      setLoadingStage(1);
 
-      // Stage 2: Medium resolution loading (800px width)
+      // Stage 2: Medium resolution loading (400px width instead of 800px to save bandwidth)
       const mediumLoader = new Image();
-      mediumLoader.src = getTransformedImageUrl(image.url, 800);
+      mediumLoader.src = getTransformedImageUrl(image.url, 400);
       
       mediumLoader.onload = () => {
-        console.log('Medium image loaded:', mediumLoader.src);
         setCurrentSrc(mediumLoader.src);
+        setLoadingStage(2);
 
-        // Stage 3: Full resolution loading
-        const fullLoader = new Image();
-        fullLoader.src = image.url;
-        
-        fullLoader.onload = () => {
-          console.log('Full image loaded:', fullLoader.src);
-          setCurrentSrc(fullLoader.src);
-          setIsLoaded(true);
-        };
-        
-        fullLoader.onerror = () => {
-          console.error('Error loading full image:', image.url);
-          setLoadError(true);
-        };
+        // Only load full resolution for priority images or on hover/interaction
+        if (isPriority) {
+          loadFullResolution();
+        }
       };
       
       mediumLoader.onerror = () => {
-        console.error('Error loading medium image:', mediumLoader.src);
-        // Try loading the original directly
-        const fullLoader = new Image();
-        fullLoader.src = image.url;
-        
-        fullLoader.onload = () => {
-          setCurrentSrc(image.url);
-          setIsLoaded(true);
-        };
-        
-        fullLoader.onerror = () => {
-          setLoadError(true);
-        };
+        // If medium resolution fails, try loading the original directly
+        loadFullResolution();
       };
     };
     
     thumbLoader.onerror = () => {
-      console.error('Error loading thumbnail:', thumbLoader.src);
       // Try loading the original directly
+      loadFullResolution();
+    };
+
+    const loadFullResolution = () => {
+      // Only load full resolution if needed (prioritized or interacted with)
       const fullLoader = new Image();
       fullLoader.src = image.url;
       
       fullLoader.onload = () => {
-        setCurrentSrc(image.url);
+        setCurrentSrc(fullLoader.src);
         setIsLoaded(true);
+        setLoadingStage(3);
       };
       
       fullLoader.onerror = () => {
@@ -116,7 +104,21 @@ const ImageCard = ({ image, index, onImageClick }: {
       thumbLoader.onload = null;
       thumbLoader.onerror = null;
     };
-  }, [isInView, image.url]);
+  }, [isInView, image.url, index]);
+
+  // Load full resolution on hover
+  useEffect(() => {
+    if (isHovered && loadingStage < 3 && !loadError) {
+      const fullLoader = new Image();
+      fullLoader.src = image.url;
+      
+      fullLoader.onload = () => {
+        setCurrentSrc(fullLoader.src);
+        setIsLoaded(true);
+        setLoadingStage(3);
+      };
+    }
+  }, [isHovered, loadingStage, image.url, loadError]);
 
   const blurDataURL = image.blur_hash || 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4dHRsdHR4dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/2wBDAR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=';
 
@@ -216,32 +218,34 @@ export const MasonryGrid = ({ images }: MasonryGridProps) => {
   const queryClient = useQueryClient();
   const [selectedImage, setSelectedImage] = useState<ImageType | null>(null);
 
+  // Only prefetch adjacent categories when needed
   useEffect(() => {
     if (!images || images.length === 0) {
       console.log('No images to display');
       return;
     }
     
-    console.log('Rendering masonry grid with images:', images);
-    
-    const categories = ['people', 'animals', 'landscapes'];
-    const currentCategory = images[0]?.category;
-    
-    if (currentCategory) {
-      const currentIndex = categories.indexOf(currentCategory);
-      if (currentIndex !== -1) {
-        const nextCategory = categories[(currentIndex + 1) % categories.length];
-        const prevCategory = categories[(currentIndex - 1 + categories.length) % categories.length];
-        
-        [nextCategory, prevCategory].forEach(category => {
+    // Debounce prefetch to avoid excess network requests
+    const timer = setTimeout(() => {
+      const categories = ['people', 'animals', 'landscapes'];
+      const currentCategory = images[0]?.category;
+      
+      if (currentCategory) {
+        const currentIndex = categories.indexOf(currentCategory);
+        if (currentIndex !== -1) {
+          // Only prefetch the next category, not both next and previous
+          const nextCategory = categories[(currentIndex + 1) % categories.length];
+          
           queryClient.prefetchQuery({
-            queryKey: ['images', category],
-            queryFn: () => import('@/services/imageService').then(m => m.getImages(category)),
+            queryKey: ['images', nextCategory],
+            queryFn: () => import('@/services/imageService').then(m => m.getImages(nextCategory)),
             staleTime: 5 * 60 * 1000,
           });
-        });
+        }
       }
-    }
+    }, 1000); // Delay prefetching by 1 second
+    
+    return () => clearTimeout(timer);
   }, [images, queryClient]);
 
   const handleImageClick = (image: ImageType) => {
@@ -260,7 +264,8 @@ export const MasonryGrid = ({ images }: MasonryGridProps) => {
         transition={{ duration: 0.3 }}
         className="columns-1 md:columns-2 lg:columns-4 gap-4 p-4"
       >
-        <AnimatePresence mode="wait" initial={false}>
+        {/* Fix AnimatePresence warning by not using 'wait' mode with multiple children */}
+        <AnimatePresence initial={false} mode="sync">
           {images && images.length > 0 ? (
             images.map((image, index) => (
               <ImageCard 

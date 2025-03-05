@@ -14,6 +14,9 @@ export const getImages = async (category?: string) => {
     query = query.eq('category', category);
   }
 
+  // Limit the number of images to prevent excessive loading
+  query = query.limit(24);
+
   const { data, error } = await query;
   
   if (error) {
@@ -21,6 +24,6 @@ export const getImages = async (category?: string) => {
     throw error;
   }
   
-  console.log('Fetched images:', data);
+  console.log('Fetched images:', data?.length || 0);
   return data as ImageType[];
 };
