@@ -1,12 +1,9 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { ImageType } from '@/types';
 import { useDisableRightClick } from '@/hooks/useDisableRightClick';
-
-function App() {
-  useDisableRightClick();
 
 interface ImagePreviewProps {
   image: ImageType | null;
@@ -14,6 +11,9 @@ interface ImagePreviewProps {
 }
 
 export const ImagePreview = ({ image, onClose }: ImagePreviewProps) => {
+  // Use the hook to disable right-clicks
+  useDisableRightClick();
+  
   if (!image) return null;
 
   return (
@@ -45,6 +45,13 @@ export const ImagePreview = ({ image, onClose }: ImagePreviewProps) => {
             alt={image.title}
             className="w-auto max-w-full h-auto max-h-[85vh] object-contain rounded-lg shadow-2xl mx-auto"
             layoutId={`image-${image.id}`}
+            draggable="false"
+            onDragStart={(e) => e.preventDefault()}
+            style={{ 
+              WebkitTouchCallout: 'none',
+              WebkitUserSelect: 'none',
+              userSelect: 'none',
+            }}
           />
           <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent text-white rounded-b-lg">
             <h3 className="text-lg md:text-xl font-semibold">{image.title}</h3>

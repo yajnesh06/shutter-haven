@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ImageType } from '@/types';
@@ -69,7 +68,7 @@ const ImageCard = ({ image, index, onImageClick }: {
         
         fullLoader.onload = () => {
           console.log('Full image loaded:', fullLoader.src);
-          setCurrentSrc(image.url);
+          setCurrentSrc(fullLoader.src);
           setIsLoaded(true);
         };
         
@@ -170,6 +169,11 @@ const ImageCard = ({ image, index, onImageClick }: {
             style={{ 
               opacity: isLoaded ? 1 : 0.5,
               willChange: 'opacity',
+              WebkitTouchCallout: 'none',
+              WebkitUserSelect: 'none',
+              userSelect: 'none',
+              draggable: 'false',
+              onDragStart: (e) => e.preventDefault(),
             }}
             onLoad={(e) => {
               const img = e.target as HTMLImageElement;

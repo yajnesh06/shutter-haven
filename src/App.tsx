@@ -9,27 +9,32 @@ import Info from "./pages/Info";
 import NotFound from "./pages/NotFound";
 import { useDisableRightClick } from '@/hooks/useDisableRightClick';
 
-
-function App() {
+function AppContent() {
+  // Apply right-click protection globally
   useDisableRightClick();
+
+  return (
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/people" element={<Index />} />
+        <Route path="/animals" element={<Index />} />
+        <Route path="/landscapes" element={<Index />} />
+        <Route path="/info" element={<Info />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </TooltipProvider>
+  );
+}
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <BrowserRouter>
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/people" element={<Index />} />
-          <Route path="/animals" element={<Index />} />
-          <Route path="/landscapes" element={<Index />} />
-          <Route path="/info" element={<Info />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </TooltipProvider>
+      <AppContent />
     </QueryClientProvider>
   </BrowserRouter>
 );
