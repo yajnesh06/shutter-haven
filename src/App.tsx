@@ -7,6 +7,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Info from "./pages/Info";
 import NotFound from "./pages/NotFound";
+import { useDisableRightClick } from '@/hooks/useDisableRightClick';
+
+
+function App() {
+  useDisableRightClick();
 
 const queryClient = new QueryClient();
 
