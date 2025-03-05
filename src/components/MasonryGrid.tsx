@@ -1,14 +1,10 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ImageType } from '@/types';
 import { useInView } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
 import { ImagePreview } from './ImagePreview';
-
-interface MasonryGridProps {
-  images: ImageType[];
-}
+import { preloadAdjacentImages } from '@/services/imageCacheService';
 
 const getTransformedImageUrl = (url: string, width?: number): string => {
   if (!url) return '';
@@ -214,7 +210,7 @@ const ImageCard = ({ image, index, onImageClick }: {
   );
 };
 
-export const MasonryGrid = ({ images }: MasonryGridProps) => {
+export const MasonryGrid = ({ images }: { images: ImageType[] }) => {
   const queryClient = useQueryClient();
   const [selectedImage, setSelectedImage] = useState<ImageType | null>(null);
 
@@ -250,10 +246,25 @@ export const MasonryGrid = ({ images }: MasonryGridProps) => {
 
   const handleImageClick = (image: ImageType) => {
     setSelectedImage(image);
+    
+    // Preload adjacent images for smoother navigation
+    if (images.length > 1) {
+      const currentIndex = images.findIndex(img => img.id === image.id);
+      if (currentIndex !== -1) {
+        preloadAdjacentImages(images, currentIndex);
+      }
+    }
   };
 
   const handleClosePreview = () => {
     setSelectedImage(null);
+  };
+  
+  const handleNavigate = (imageId: string) => {
+    const newImage = images.find(img => img.id === imageId);
+    if (newImage) {
+      setSelectedImage(newImage);
+    }
   };
 
   return (
@@ -285,7 +296,9 @@ export const MasonryGrid = ({ images }: MasonryGridProps) => {
       
       <ImagePreview 
         image={selectedImage} 
+        images={images}
         onClose={handleClosePreview}
+        onNavigate={handleNavigate}
       />
     </>
   );
