@@ -16,12 +16,15 @@ interface ImagePreviewProps {
 }
 
 export const ImagePreview = ({ image, images, onClose, onNavigate }: ImagePreviewProps) => {
-  // Use the hook to disable right-clicks
-  useDisableRightClick();
+  // Initialize all state hooks at the top level
   const [showInfo, setShowInfo] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
+  
+  // Use the hook to disable right-clicks
+  useDisableRightClick();
 
+  // Early return if no image
   if (!image) return null;
 
   // Find current image index
@@ -38,6 +41,10 @@ export const ImagePreview = ({ image, images, onClose, onNavigate }: ImagePrevie
     if (image && images.length > 0) {
       preloadAdjacentImages(images, currentIndex);
     }
+    
+    // Reset loading state when image changes
+    setIsLoading(true);
+    setLoadError(false);
   }, [image, images, currentIndex]);
 
   // Add keyboard navigation support
