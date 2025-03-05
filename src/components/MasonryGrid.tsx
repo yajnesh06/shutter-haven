@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ImageType } from '@/types';
@@ -162,7 +163,8 @@ const ImageCard = ({ image, index, onImageClick }: {
             layoutId={`image-${image.id}`}
             src={currentSrc}
             alt={image.title}
-            fetchPriority={index < 4 ? "high" : "low"}
+            // Fixed: Changed fetchPriority to lowercase fetchpriority
+            fetchpriority={index < 4 ? "high" : "low"}
             decoding="async"
             className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
             style={{ 

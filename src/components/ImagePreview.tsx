@@ -24,13 +24,9 @@ export const ImagePreview = ({ image, images, onClose, onNavigate }: ImagePrevie
   // Use the hook to disable right-clicks
   useDisableRightClick();
 
-  // Early return if no image
-  if (!image) return null;
-
-  // Find current image index
-  const currentIndex = images.findIndex(img => img.id === image.id);
-  
-  // Determine prev/next images
+  // Find current image index and determine prev/next images
+  // These are computed values, not state, so they don't cause issues with hooks
+  const currentIndex = image ? images.findIndex(img => img.id === image.id) : -1;
   const hasPrev = currentIndex > 0;
   const hasNext = currentIndex < images.length - 1;
   const prevImage = hasPrev ? images[currentIndex - 1] : null;
@@ -38,19 +34,19 @@ export const ImagePreview = ({ image, images, onClose, onNavigate }: ImagePrevie
 
   // Preload adjacent images for smoother navigation
   useEffect(() => {
-    if (image && images.length > 0) {
+    if (image && images.length > 0 && currentIndex >= 0) {
       preloadAdjacentImages(images, currentIndex);
+      
+      // Reset loading state when image changes
+      setIsLoading(true);
+      setLoadError(false);
     }
-    
-    // Reset loading state when image changes
-    setIsLoading(true);
-    setLoadError(false);
   }, [image, images, currentIndex]);
 
   // Add keyboard navigation support
   useHotkeys([
-    { key: 'ArrowLeft', callback: () => hasPrev && onNavigate(prevImage!.id) },
-    { key: 'ArrowRight', callback: () => hasNext && onNavigate(nextImage!.id) },
+    { key: 'ArrowLeft', callback: () => hasPrev && prevImage && onNavigate(prevImage.id) },
+    { key: 'ArrowRight', callback: () => hasNext && nextImage && onNavigate(nextImage.id) },
     { key: 'Escape', callback: onClose },
     { key: 'i', callback: () => setShowInfo(!showInfo) },
   ]);
@@ -64,6 +60,9 @@ export const ImagePreview = ({ image, images, onClose, onNavigate }: ImagePrevie
       variant: "destructive",
     });
   };
+
+  // If no image is provided, render nothing but still call all hooks above
+  if (!image) return null;
 
   return (
     <AnimatePresence>
@@ -97,7 +96,7 @@ export const ImagePreview = ({ image, images, onClose, onNavigate }: ImagePrevie
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onNavigate(prevImage!.id);
+                  prevImage && onNavigate(prevImage.id);
                 }}
                 className="bg-black/30 hover:bg-black/60 transition-colors p-2 rounded-r-lg text-white"
                 aria-label="Previous image"
@@ -112,7 +111,7 @@ export const ImagePreview = ({ image, images, onClose, onNavigate }: ImagePrevie
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onNavigate(nextImage!.id);
+                  nextImage && onNavigate(nextImage.id);
                 }}
                 className="bg-black/30 hover:bg-black/60 transition-colors p-2 rounded-l-lg text-white"
                 aria-label="Next image"
