@@ -6,7 +6,11 @@ import { useLocation } from 'react-router-dom';
 import { useImages } from '@/hooks/useImages';
 import { Loader2 } from 'lucide-react';
 import { ImageType } from '@/types';
+import { useDisableRightClick } from '@/hooks/useDisableRightClick';
 
+
+function App() {
+  useDisableRightClick();
 const Index = () => {
   const location = useLocation();
   const category = location.pathname.substring(1) as 'people' | 'animals' | 'landscapes' | '';
