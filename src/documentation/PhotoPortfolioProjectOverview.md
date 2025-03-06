@@ -116,6 +116,7 @@ The full-screen image preview implements:
 - Responsive controls adapting to device size
 - Touch-friendly interaction patterns for mobile users
 - Keyboard navigation support
+- Image information panel toggle
 
 ## Component Structure
 

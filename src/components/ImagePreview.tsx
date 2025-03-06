@@ -1,12 +1,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, Info, Download } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { ImageType } from '@/types';
 import { useDisableRightClick } from '@/hooks/useDisableRightClick';
 import { preloadAdjacentImages } from '@/services/imageCacheService';
 import { useHotkeys } from '@/hooks/useHotkeys';
-import { toast } from '@/components/ui/use-toast';
 
 interface ImagePreviewProps {
   image: ImageType | null;
@@ -50,16 +49,6 @@ export const ImagePreview = ({ image, images, onClose, onNavigate }: ImagePrevie
     { key: 'Escape', callback: onClose },
     { key: 'i', callback: () => setShowInfo(!showInfo) },
   ]);
-
-  const handleDownloadAttempt = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    toast({
-      title: "Download Protected",
-      description: "This image is protected and cannot be downloaded.",
-      variant: "destructive",
-    });
-  };
 
   // If no image is provided, render nothing but still call all hooks above
   if (!image) return null;
@@ -131,15 +120,6 @@ export const ImagePreview = ({ image, images, onClose, onNavigate }: ImagePrevie
             aria-label="Toggle information"
           >
             <Info className="w-5 h-5" />
-          </button>
-
-          {/* Download prevention overlay */}
-          <button
-            onClick={handleDownloadAttempt}
-            className="absolute top-2 right-2 p-2 bg-black/30 hover:bg-black/60 transition-colors rounded-full text-white"
-            aria-label="Download (disabled)"
-          >
-            <Download className="w-5 h-5" />
           </button>
 
           {/* Loading indicator */}
