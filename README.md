@@ -38,7 +38,7 @@ A responsive photography portfolio application built with React, TypeScript, and
 
 1. Clone the repository
 ```bash
-git clone <your-repo-url>
+git clone <this repo url>
 cd <project-directory>
 ```
 
