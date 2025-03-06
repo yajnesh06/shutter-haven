@@ -28,8 +28,10 @@ export const appSettings = {
   },
   defaultCategory: 'all',
   categories: ['people', 'animals', 'landscapes'],
-  staleTime: 5 * 60 * 1000, // 5 minutes in milliseconds
-  cacheTime: 30 * 60 * 1000 // 30 minutes in milliseconds
+  staleTime: 15 * 60 * 1000, // 15 minutes in milliseconds
+  cacheTime: 60 * 60 * 1000, // 60 minutes in milliseconds
+  localStorageCacheEnabled: true,
+  localStorageMaxAge: 24 * 60 * 60 * 1000 // 24 hours in milliseconds
 };
 
 // Feature flags

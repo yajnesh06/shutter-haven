@@ -18,6 +18,11 @@ export const getImages = async (category?: string) => {
   // Limit the number of images to prevent excessive loading
   query = query.limit(24);
 
+  // Add cache control to the request
+  const fetchOptions = {
+    cache: 'force-cache' as RequestCache, // Tell fetch to use HTTP cache aggressively
+  };
+  
   const { data, error } = await query;
   
   if (error) {

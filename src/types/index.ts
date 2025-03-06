@@ -8,5 +8,6 @@ export interface ImageType {
   height: number;
   title: string;
   category: ImageCategory;
-  blur_hash?: string;  // Added this optional property
+  blur_hash?: string;
+  timestamp?: number;  // Added for cache age tracking
 }
