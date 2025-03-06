@@ -1,6 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { ImageType } from "@/types";
+import { appSettings } from "@/config/appConfig";
 
 export const getImages = async (category?: string) => {
   console.log('Fetching images with category:', category);
@@ -10,7 +11,7 @@ export const getImages = async (category?: string) => {
     .select('*')
     .order('created_at', { ascending: false });
 
-  if (category) {
+  if (category && category !== appSettings.defaultCategory) {
     query = query.eq('category', category);
   }
 
